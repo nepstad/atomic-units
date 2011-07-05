@@ -28,6 +28,24 @@ class UnitsForm(QWidget):
         grid.addWidget(self.formAU, 1, 0)
         self.setLayout(grid)
 
+        #Define form behavior
+        self.connect(self.formSI, SIGNAL("returnPressed()"), self.computeUnit)
+
+
+    def computeUnit(self):
+        #Get input SI value
+        try:
+            inputVal = float(unicode(self.formSI.text()))
+        except:
+            inputVal = float("NaN")
+
+        #Get input unit
+        inputUnit = unicode(self.unitTypeSI.currentText())
+
+        #Calculate value in a.u.
+        outputVal = 0.0013 * inputVal
+        self.formAU.setText("%e" % outputVal)
+
 
 
 def main():
