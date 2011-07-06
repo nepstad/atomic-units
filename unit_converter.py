@@ -40,10 +40,12 @@ class ConstantsAU:
     """
 
     def __init__(self, codata):
-        kg = unit('kg')
-        coulomb = unit('C')
-        joule_second = unit('J') * unit('s')
-        farad_per_meter = unit('F') / unit('m')
+        #SI units
+        self.si_mass = unit('kg')
+        self.si_charge = unit('C')
+        self.si_energy = unit('J')
+        self.si_action = unit('J') * unit('s')
+        #farad_per_meter = unit('F') / unit('m')
 
         self.codata = codata
 

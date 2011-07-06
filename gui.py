@@ -1,6 +1,7 @@
 import sys
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+import units.exception
 from unit_converter import ConstantsAU, ParseCODATA
 
 class In_UNITS:
@@ -16,7 +17,10 @@ class UnitsForm(QWidget):
         self.convertDict = {
                 #unicode('W/cm**2 -> E-field (a.u.)'): au.ConvertElectricFieldAtomicFromIntensityIn,
                 unicode('eV'): au.electron_volt,
-                unicode('energy'): au.energy
+                unicode('(a.u.) energy'): au.energy,
+                unicode('(a.u.) mass'): au.mass,
+                unicode('(SI) kg'): au.si_mass,
+                unicode('(SI) J'): au.si_energy,
         }
         convertKeys = sorted(self.convertDict.keys(), key=lambda s: s.lower())
 
@@ -32,8 +36,8 @@ class UnitsForm(QWidget):
 
         #Info widgets
         self.atomicUnitsList = QLabel()
-        self.atomicUnitsList.setText("<b>List of atomic units</b> <br> time: %s" %
-                "".join(["%s " % el for el in reversed(au.codata['atomic unit of time'])]))
+        self.atomicUnitsList.setText("<b>Basic atomic units</b> <br> mass: %s" %
+                "".join(["%s " % el for el in reversed(au.codata['atomic unit of mass'])]))
 
         #Create widget layout
         grid = QGridLayout()
@@ -64,9 +68,15 @@ class UnitsForm(QWidget):
         #Calculate value in a.u.
         f = self.convertDict[inputUnit]
         g = self.convertDict[outputUnit]
-        outputVal = g(f(inputVal))
-
-        self.formOut.setText("%g" % outputVal)
+        try:
+            outputVal = g(f(inputVal))
+        except units.exception.IncompatibleUnitsError:
+            self.errMsg = QMessageBox()
+            self.errMsg.setText("Incompatible units")
+            self.errMsg.setWindowTitle("Error!")
+            self.errMsg.show()
+        else:
+            self.formOut.setText("%g" % outputVal)
 
 
 
