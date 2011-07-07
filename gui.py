@@ -52,6 +52,8 @@ class UnitsForm(QWidget):
         self.connect(self.formIn, SIGNAL("returnPressed()"), self.computeUnit)
         self.connect(self.unitTypeIn, SIGNAL("currentIndexChanged(QString)"), self.generateOutputUnits)
 
+        #Set the title
+        self.setWindowTitle("Atomic Units")
 
     def computeUnit(self):
         #Get input In value
