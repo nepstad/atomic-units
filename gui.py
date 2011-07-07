@@ -50,6 +50,7 @@ class UnitsForm(QWidget):
 
         #Define form behavior
         self.connect(self.formIn, SIGNAL("returnPressed()"), self.computeUnit)
+        self.connect(self.unitTypeIn, SIGNAL("currentIndexChanged(QString)"), self.generateOutputUnits)
 
 
     def computeUnit(self):
@@ -77,6 +78,20 @@ class UnitsForm(QWidget):
             self.errMsg.show()
         else:
             self.formOut.setText("%g" % outputVal)
+
+
+    def generateOutputUnits(self, newItem):
+        """
+        Generate list of compatible output units based on input units
+        """
+        inUnit = self.convertDict[unicode(newItem)]
+        outputUnitNames = filter(
+                lambda x: x[1].canonical() == inUnit.canonical(),
+                self.convertDict.iteritems())
+        print outputUnitNames
+        outputUnits = sorted(dict(outputUnitNames).keys(), key=lambda s: s.lower())
+        self.unitTypeOut.clear()
+        self.unitTypeOut.addItems(outputUnits)
 
 
 
