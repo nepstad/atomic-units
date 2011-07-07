@@ -32,7 +32,7 @@ class UnitsForm(QWidget):
         self.unitTypeIn = QComboBox()
         self.unitTypeIn.addItems(convertKeys)
         self.unitTypeOut = QComboBox()
-        self.unitTypeOut.addItems(convertKeys)
+        self.generateOutputUnits(convertKeys[0])
 
         #Info widgets
         self.atomicUnitsList = QLabel()
@@ -85,16 +85,22 @@ class UnitsForm(QWidget):
     def generateOutputUnits(self, newItem):
         """
         Generate list of compatible output units based on input units
+
+        newItem: (string) name of input unit
+
         """
+        #Get input unit
         inUnit = self.convertDict[unicode(newItem)]
+
+        #Filter list of units for compatible output units
         outputUnitNames = filter(
                 lambda x: x[1].canonical() == inUnit.canonical(),
                 self.convertDict.iteritems())
-        print outputUnitNames
         outputUnits = sorted(dict(outputUnitNames).keys(), key=lambda s: s.lower())
+
+        #Update output unit list
         self.unitTypeOut.clear()
         self.unitTypeOut.addItems(outputUnits)
-
 
 
 def main():
