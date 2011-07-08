@@ -12,10 +12,11 @@ class UnitsForm(QWidget):
     def __init__(self, parent=None):
         super(UnitsForm, self).__init__(parent=parent)
 
-        #Define In units that we know
+        # Define In units that we know
         au = ConstantsAU(ParseCODATA("codata.txt"))
         self.convertDict = {
-                #unicode('W/cm**2 -> E-field (a.u.)'): au.ConvertElectricFieldAtomicFromIntensityIn,
+                #unicode('W/cm**2 -> E-field (a.u.)'):
+                # au.ConvertElectricFieldAtomicFromIntensityIn,
                 unicode('eV'): au.electron_volt,
                 unicode('(a.u.) energy'): au.energy,
                 unicode('(a.u.) mass'): au.mass,
@@ -24,22 +25,23 @@ class UnitsForm(QWidget):
         }
         convertKeys = sorted(self.convertDict.keys(), key=lambda s: s.lower())
 
-        #Set up input widgets
+        # Set up input widgets
         self.formIn = QLineEdit()
         self.formOut = QLineEdit()
 
-        #Set up input widgets
+        # Set up input widgets
         self.unitTypeIn = QComboBox()
         self.unitTypeIn.addItems(convertKeys)
         self.unitTypeOut = QComboBox()
         self.generateOutputUnits(convertKeys[0])
 
-        #Info widgets
+        # Info widgets
         self.atomicUnitsList = QLabel()
         self.atomicUnitsList.setText("<b>Basic atomic units</b> <br> mass: %s" %
-                "".join(["%s " % el for el in reversed(au.codata['atomic unit of mass'])]))
+                "".join(["%s " % el
+                    for el in reversed(au.codata['atomic unit of mass'])]))
 
-        #Create widget layout
+        # Create widget layout
         grid = QGridLayout()
         grid.addWidget(self.formIn, 0, 0)
         grid.addWidget(self.unitTypeIn, 0, 1)
@@ -48,27 +50,34 @@ class UnitsForm(QWidget):
         grid.addWidget(self.atomicUnitsList, 2, 0, 1, -1)
         self.setLayout(grid)
 
-        #Define form behavior
-        self.connect(self.formIn, SIGNAL("returnPressed()"), self.computeUnit)
-        self.connect(self.unitTypeIn, SIGNAL("currentIndexChanged(QString)"), self.generateOutputUnits)
+        # Define form behavior
+        self.connect(self.formIn, SIGNAL("textEdited(QString)"),
+                self.updateOutputUnit)
+        self.connect(self.unitTypeIn, SIGNAL("currentIndexChanged(QString)"),
+                self.generateOutputUnits)
+        self.connect(self.unitTypeIn, SIGNAL("currentIndexChanged(QString)"),
+                self.updateOutputUnit)
+        self.connect(self.unitTypeOut, SIGNAL("currentIndexChanged(QString)"),
+                self.updateOutputUnit)
 
-        #Set the title
+        # Set the title
         self.setWindowTitle("Atomic Units")
 
-    def computeUnit(self):
-        #Get input In value
+
+    def updateOutputUnit(self):
+        # Get input In value
         try:
             inputVal = float(unicode(self.formIn.text()))
         except:
             inputVal = float("NaN")
 
-        #Get input unit
+        # Get input unit
         inputUnit = unicode(self.unitTypeIn.currentText())
 
-        #Get output unit
+        # Get output unit
         outputUnit = unicode(self.unitTypeOut.currentText())
 
-        #Calculate value in a.u.
+        # Calculate value in a.u.
         f = self.convertDict[inputUnit]
         g = self.convertDict[outputUnit]
         try:
@@ -89,18 +98,20 @@ class UnitsForm(QWidget):
         newItem: (string) name of input unit
 
         """
-        #Get input unit
+        # Get input unit
         inUnit = self.convertDict[unicode(newItem)]
 
-        #Filter list of units for compatible output units
+        # Filter list of units for compatible output units
         outputUnitNames = filter(
                 lambda x: x[1].canonical() == inUnit.canonical(),
                 self.convertDict.iteritems())
         outputUnits = sorted(dict(outputUnitNames).keys(), key=lambda s: s.lower())
 
-        #Update output unit list
+        # Update output unit list
         self.unitTypeOut.clear()
         self.unitTypeOut.addItems(outputUnits)
+        self.unitTypeOut.setCurrentIndex(0)
+
 
 
 def main():
