@@ -73,10 +73,10 @@ class ConstantsAU:
         self.electron_volt = scaled_unit('eV', *codata['electron volt'])
 
 
-    def ConvertEnergyEVToAU(self, energy_eV):
-        """Convert energy from electron volts to atomic units of energy
-        """
-        return energy_eV * self.codata['Hartree energy in eV'][1]
+#    def ConvertEnergyEVToAU(self, energy_eV):
+#        """Convert energy from electron volts to atomic units of energy
+#        """
+#        return energy_eV * self.codata['Hartree energy in eV'][1]
 
 
     def ConvertElectricFieldAtomicFromIntensitySI(self, intensity):
@@ -92,3 +92,15 @@ class ConstantsAU:
         val = sqrt(2.0 * intensity / (self.electrostatic_constant.squeeze() /
                 (4*pi) * self.lightspeed))
         return val * 100.0 / self.electric_field_strength.squeeze()
+
+
+    def ConvertIntensitySIFromElectricFieldAtomic(self, efield):
+        """
+        Intensity [W/cm**2] <- E-field strength [a.u.]
+
+          I = 0.5 * eps0 * c * E0**2
+
+        """
+        val = 0.5 * self.electrostatic_constant.squeeze() / (4*pi) * \
+            self.lightspeed * efield**2
+        return val / 100.0**2 * self.electric_field_strength.squeeze()**2
