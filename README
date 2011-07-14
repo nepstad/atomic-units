@@ -1,0 +1,2 @@
+A simple unit converter between SI and atomic units for some useful quantities,
+using on the Python package Units. A basic PyQT GUI is provided.
