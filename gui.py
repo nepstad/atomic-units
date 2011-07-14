@@ -18,10 +18,15 @@ class UnitsForm(QWidget):
         self.ConvertEfield = au.ConvertIntensitySIFromElectricFieldAtomic
         self.convertDict = {
                 unicode('eV'): au.electron_volt,
+                unicode('fs'): au.femtosecond,
                 unicode('(a.u.) energy'): au.energy,
                 unicode('(a.u.) mass'): au.mass,
-                unicode('(SI) kg'): au.si_mass,
-                unicode('(SI) J'): au.si_energy,
+                unicode('(a.u.) time'): au.time,
+                unicode('(a.u.) frequency'): au.frequency,
+                unicode('kg'): au.si_mass,
+                unicode('J'): au.si_energy,
+                unicode('Hz'): au.si_frequency,
+                unicode('s'): au.si_time,
         }
         convertKeys = sorted(self.convertDict.keys(), key=lambda s: s.lower())
 

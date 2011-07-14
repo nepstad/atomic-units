@@ -45,6 +45,8 @@ class ConstantsAU:
         self.si_charge = unit('C')
         self.si_energy = unit('J')
         self.si_action = unit('J') * unit('s')
+        self.si_time = unit('s')
+        self.si_frequency = unit('Hz')
         #farad_per_meter = unit('F') / unit('m')
 
         self.codata = codata
@@ -57,6 +59,7 @@ class ConstantsAU:
         self.hbar = named_unit('action_au', ['J'], ['s'],
                 codata['atomic unit of action'][1])
         self.alpha = codata['fine-structure constant'][1]
+        self.time = scaled_unit('time_au', *codata['atomic unit of time'])
 
         #Derived units
         self.speed = scaled_unit("speed_au", *codata['atomic unit of velocity'])
@@ -68,9 +71,11 @@ class ConstantsAU:
                 (self.hbar**2 / (self.mass * self.length**2)).squeeze())
         self.electric_field_strength = named_unit('efield_au', ['V'], ['m'],
             (self.charge / (self.electrostatic_constant * self.length**2)).squeeze())
+        self.frequency = scaled_unit('frequency_au', 'Hz', 1.0/self.time.squeeze())
 
         #Other units
         self.electron_volt = scaled_unit('eV', *codata['electron volt'])
+        self.femtosecond = scaled_unit('fs', 's', self.si_time.squeeze()*1e-15)
 
 
 #    def ConvertEnergyEVToAU(self, energy_eV):
@@ -104,3 +109,5 @@ class ConstantsAU:
         val = 0.5 * self.electrostatic_constant.squeeze() / (4*pi) * \
             self.lightspeed * efield**2
         return val / 100.0**2 * self.electric_field_strength.squeeze()**2
+
+
