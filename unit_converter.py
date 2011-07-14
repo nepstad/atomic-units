@@ -78,12 +78,6 @@ class ConstantsAU:
         self.femtosecond = scaled_unit('fs', 's', self.si_time.squeeze()*1e-15)
 
 
-#    def ConvertEnergyEVToAU(self, energy_eV):
-#        """Convert energy from electron volts to atomic units of energy
-#        """
-#        return energy_eV * self.codata['Hartree energy in eV'][1]
-
-
     def ConvertElectricFieldAtomicFromIntensitySI(self, intensity):
         """
         Intensity [W/cm**2] -> E-field strength [a.u.]
@@ -111,3 +105,9 @@ class ConstantsAU:
         return val / 100.0**2 * self.electric_field_strength.squeeze()**2
 
 
+    def ConvertAngularFrequencyAtomicFromWavelengthSI(self, wavelength):
+        """
+        Wavelength [nm] -> angular freq. [a.u]
+        """
+        val = 2*pi * self.lightspeed / (wavelength*1e-9)
+        return (val / self.frequency.squeeze()).get_num()

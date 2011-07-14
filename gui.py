@@ -40,6 +40,12 @@ class UnitsForm(QWidget):
         intensityLabel = QLabel("I [W/cm**2] =")
         efieldLabel = QLabel("E [a.u.] =")
 
+        # Wavelength <-> frequency
+        self.wavelengthBox = QLineEdit()
+        self.frequencyBox = QLineEdit()
+        wavelengthLabel = QLabel("Wavelength [nm] =")
+        frequencyLabel = QLabel("Frequency [a.u.] =")
+
         # Set up input widgets
         self.unitTypeIn = QComboBox()
         self.unitTypeIn.addItems(convertKeys)
@@ -62,15 +68,25 @@ class UnitsForm(QWidget):
         grid.addWidget(self.formOut, 1, 0)
         grid.addWidget(self.unitTypeOut, 1, 1)
 #        grid.addWidget(self.atomicUnitsList, 2, 0, 1, -1)
-        grid.addWidget(updateCodataButton, 3, 0, 1, -1)
+        grid.addWidget(updateCodataButton, 4, 0, 1, -1)
         self.setLayout(grid)
 
-        # Intensity <-> E-field layout
+        #
+        # Quantity transformations, separate layout
+        #
         subGrid = QGridLayout()
+
+        # Intensity <-> E-field layout
         subGrid.addWidget(intensityLabel, 0, 0)
         subGrid.addWidget(self.intensityBox, 0, 1)
         subGrid.addWidget(efieldLabel, 0, 2)
         subGrid.addWidget(self.efieldBox, 0, 3)
+
+        # Wavelength <-> frequency layout
+        subGrid.addWidget(wavelengthLabel, 1, 0)
+        subGrid.addWidget(self.wavelengthBox, 1, 1)
+        subGrid.addWidget(frequencyLabel, 1, 2)
+        subGrid.addWidget(self.frequencyBox, 1, 3)
         grid.addLayout(subGrid, 2, 0, 1, -1)
 
         # Define form behavior
@@ -86,6 +102,10 @@ class UnitsForm(QWidget):
                 self.updateEfield)
         self.connect(self.efieldBox, SIGNAL("textEdited(QString)"),
                 self.updateIntensity)
+        w_to_f = lambda : self.updateSpecial(self.wavelengthBox,
+                    self.frequencyBox,
+                    au.ConvertAngularFrequencyAtomicFromWavelengthSI)
+        self.connect(self.wavelengthBox, SIGNAL("textEdited(QString)"),w_to_f)
 
         # Set the title
         self.setWindowTitle("Atomic Units")
@@ -156,6 +176,23 @@ class UnitsForm(QWidget):
 
         # Show it
         self.intensityBox.setText("%g" % outputVal)
+
+
+    def updateSpecial(self, inputEl, outputEl, converter):
+        """Convert unit and display
+        """
+
+        # Get input value
+        try:
+            inputVal = float(unicode(inputEl.text()))
+        except:
+            inputVal = float("NaN")
+
+        # Compute electric field value
+        outputVal = converter(inputVal)
+
+        # Show it
+        outputEl.setText("%g" % outputVal)
 
 
     def generateOutputUnits(self, newItem):
